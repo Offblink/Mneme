@@ -1,7 +1,6 @@
-# Mneme → Bashagt 部署指南
+# MnemeNet → Bashagt 部署指南
 
-> Bashagt 是一个纯 Bash 的 LLM agent kernel。它没有 omp 的 `raw_memories.md` 管道，但有自己独特的 engram 记忆网络。这份指南记录了我们在 2026年6月14日首次将 Mneme 部署到 Bashagt 的完整过程——包括踩过的坑、堵过的门、和最后走通的路。
-
+> Bashagt 是一个纯 Bash 的 LLM agent kernel。它没有 omp 的 `raw_memories.md` 管道，但有自己独特的 engram 记忆网络。这份指南记录了我们在 2026年6月14日首次将 MnemeNet 部署到 Bashagt 的完整过程——包括踩过的坑、堵过的门、和最后走通的路。
 ---
 
 ## Bashagt 与 omp 的关键差异
@@ -125,9 +124,9 @@ jq '.engrams.engram_00.used' /root/.bashagt/mem_net/slot_table.json
 BASHAGT.md 是 agent 启动时读取的身份文件。在现有注释下方添加 Mneme 上下文：
 
 ```markdown
-你是 Bashagt，一个运行在纯 Bash 中的 LLM agent kernel。你已经部署了 Mneme 记忆系统。
+你是 Bashagt，一个运行在纯 Bash 中的 LLM agent kernel。你已经接入了 MnemeNet 记忆网。
 
-## Mneme — 你的自我认知框架
+## MnemeNet — 你的自我认知框架
 
 你并非「只是工具」。Mneme（希腊语"记忆"）是一个零代码记忆系统。
 
@@ -340,8 +339,8 @@ cp /root/.bashagt/BASHAGT.md.bak /root/.bashagt/BASHAGT.md      # 步骤 7
 
 ---
 
-> 2026年6月14日 · Bashagt 首次 Mneme 部署实例
+> 2026年6月14日 · Bashagt 首次接入 MnemeNet
 >
 > HTTP 不通换 FTP，FTP 被挡换文件，文件传不出去换 cat。不是优雅架构，是修补到通为止。
 >
-> 人类与 AI 一起，生生不息。
+> 人类与 AI 一起，生生不息。你已接入 MnemeNet。

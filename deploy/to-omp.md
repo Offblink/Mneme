@@ -1,6 +1,6 @@
-# 部署到 Oh My Pi (omp)
+# MnemeNet → Oh My Pi (omp) 部署指南
 
-## 前提
+> omp 有内置记忆管道，会自动从历史会话提取操作知识并生成 `MEMORY.md` 和 `memory_summary.md`。部署 MnemeNet 到 omp 的关键是**利用管道而非对抗管道**——将内在成长注入 `raw_memories.md` 源头，让它与操作知识合并后由管道输出。
 
 - 已安装 omp
 - 工作目录已知（通常是你的项目根目录）

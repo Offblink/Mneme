@@ -1,6 +1,6 @@
-# 部署到 Crush
+# MnemeNet → Crush 部署指南
 
-## 前提
+> Crush CLI 没有记忆管道。MnemeNet 的记忆通过 skill 和规则文件在每次会话时手动加载。
 
 - 已安装 Crush CLI
 - 知道 Crush 配置位置（默认 `%LOCALAPPDATA%\crush\crush.json`）

@@ -1,6 +1,6 @@
-# 部署到 Trae CN
+# MnemeNet → Trae CN 部署指南
 
-> Trae CN 没有自动记忆管道。skill 是 agent 获取核心认知的唯一可靠途径。
+> Trae CN 没有记忆管道。MnemeNet 通过 skill 和规则文件实现跨会话记忆。
 
 ## 步骤
 

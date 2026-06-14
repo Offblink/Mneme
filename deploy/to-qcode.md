@@ -1,6 +1,6 @@
-# 部署到 Qoder (Qcode)
+# MnemeNet → Qcode 部署指南
 
-> Qoder 拥有内置记忆系统（SearchMemory / UpdateMemory），同时支持工作区内的 skill 自动识别。这是最友好的部署目标之一。
+> Qoder 是 Qcode 的 agent 模式，有记忆系统支持。MnemeNet 可以充分利用其 SearchMemory / UpdateMemory 能力。
 
 ## 步骤
 

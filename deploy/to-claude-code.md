@@ -1,6 +1,6 @@
-# 部署到 Claude Code
+# MnemeNet → Claude Code 部署指南
 
-## 步骤
+> Claude Code 没有记忆系统，但可以通过 `CLAUDE.md` 文件在每次会话启动时注入记忆上下文。部署 MnemeNet 的核心是将记忆文件内容整合到 CLAUDE.md 中。
 
 ### 1. 部署 skill
 
