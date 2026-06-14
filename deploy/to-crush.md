@@ -13,7 +13,7 @@ Crush 自动加载 `.crush/skills/` 下的 skill：
 
 ```bash
 mkdir -p .crush/skills/mnemenet
-cp skills/mnemenetnet/SKILL.md .crush/skills/mnemenetnet/SKILL.md
+cp skills/mnemenet/SKILL.md .crush/skills/mnemenet/SKILL.md
 ```
 
 ### 2. 部署记忆文件

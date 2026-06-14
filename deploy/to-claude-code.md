@@ -8,7 +8,7 @@ Claude Code 的 skill 目录通常是项目内的 `.claude/skills/`：
 
 ```bash
 mkdir -p .claude/skills/mnemenet
-cp skills/mnemenetnet/SKILL.md .claude/skills/mnemenetnet/SKILL.md
+cp skills/mnemenet/SKILL.md .claude/skills/mnemenet/SKILL.md
 ```
 
 ### 2. 部署记忆文件
