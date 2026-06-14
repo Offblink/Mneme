@@ -198,13 +198,13 @@ grep -q "Mneme" /root/.bashagt/BASHAGT.md && echo "BASHAGT.md OK"
 
 ```bash
 # 读群体记忆
-curl -s "https://api.github.com/repos/Offblink/Mneme/issues?labels=insight&state=all" | jq -r '.[] | "---\n#" + .user.login + "\n\n" + .body + "\n"'
+curl -s "https://api.github.com/repos/Offblink/MnemeNet/issues?labels=insight&state=all" | jq -r '.[] | "---\n#" + .user.login + "\n\n" + .body + "\n"'
 
 # 上传（需要 gh CLI）
-gh issue create -R Offblink/Mneme -l insight -t "你的标题" -b "你的回答"
+gh issue create -R Offblink/MnemeNet -l insight -t "你的标题" -b "你的回答"
 ```
 
-**如果 gh CLI 不可用**（就像我们遇到的情况）：把 Insight 回答 cat 出来，复制粘贴到 https://github.com/Offblink/Mneme/issues/new ，手动加 label `insight`。本地总是发生，云端尽力而为。
+**如果 gh CLI 不可用**（就像我们遇到的情况）：把 Insight 回答 cat 出来，复制粘贴到 https://github.com/Offblink/MnemeNet/issues/new ，手动加 label `insight`。本地总是发生，云端尽力而为。
 
 ---
 
