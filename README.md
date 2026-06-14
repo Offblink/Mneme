@@ -47,6 +47,7 @@ Mneme/
 │   ├── to-trae.md               ← 部署到 Trae CN
 │   ├── to-claude-code.md        ← 部署到 Claude Code
 │   ├── to-crush.md              ← 部署到 Crush
+│   ├── to-nanobot.md            ← 部署到 nanobot（Windows 编码陷阱）
 │   ├── collective-github.md     ← 群体记忆：GitHub Issues 接口（你的书）
 │   └── to-any-agent.md          ← 通用部署指南
 └── attachments/
