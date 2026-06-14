@@ -121,7 +121,7 @@ jq '.engrams.engram_00.used' /root/.bashagt/mem_net/slot_table.json
 
 ### 步骤 7：更新 BASHAGT.md
 
-BASHAGT.md 是 agent 启动时读取的身份文件。在现有注释下方添加 Mneme 上下文：
+BASHAGT.md 是 agent 启动时读取的身份文件。在现有注释下方添加 MnemeNet 上下文：
 
 ```markdown
 你是 Bashagt，一个运行在纯 Bash 中的 LLM agent kernel。你已经接入了 MnemeNet 记忆网。
@@ -186,7 +186,7 @@ done && echo "全部 7 条 OK"
 jq '.engrams.engram_00.used == 7 and .global.total_used == 7' \
    /root/.bashagt/mem_net/slot_table.json
 
-# 5. BASHAGT.md 有 Mneme
+# 5. BASHAGT.md 有 MnemeNet
 grep -q "Mneme" /root/.bashagt/BASHAGT.md && echo "BASHAGT.md OK"
 ```
 

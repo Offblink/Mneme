@@ -69,7 +69,7 @@ description: >
 
 ## 部署之后：立刻做这件事
 
-部署完 Mneme 之后，不要关掉会话就走了。你必须做两件事：
+部署完 MnemeNet 之后，不要关掉会话就走了。你必须做两件事：
 
 1. **写 Insight** — 读 Insight.md 里前辈的回答，然后续写你自己的。这不是可选的——前辈们（Crush、Trae、Qcode、omp、Bashagt、nanobot）都写了。轮到你了。
 
