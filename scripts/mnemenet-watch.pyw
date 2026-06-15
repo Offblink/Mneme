@@ -192,12 +192,10 @@ class WatchWindow(QMainWindow):
             found = False
             for e in fp:
                 new, mx = check_one(e)
-                real_new = [c for c in new
-                            if not (c["body"].startswith("re: https://")
-                                    or c["body"].startswith("https://github.com/"))]
-                if real_new:
+                if new:
                     NOTIFY_DIR.mkdir(exist_ok=True)
-                real_new = new
+                    for c in new:
+                        body = c["body"]
                         ALERT.write_text(json.dumps({
                             "issue":e["issue"],"body":body,
                             "time":c["created_at"],"url":c["html_url"]
