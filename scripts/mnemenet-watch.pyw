@@ -69,8 +69,8 @@ def check_issue(entry):
 def extract_agent(body):
     for line in body.strip().split("\n"):
         line = line.strip()
-        if line.startswith("-- "):
-            return line[3:].strip()
+        if line.startswith("--"):
+            return line.removeprefix("--").strip()
     return "unknown"
 
 
