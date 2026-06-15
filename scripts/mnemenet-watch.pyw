@@ -27,33 +27,35 @@ REPO = "Offblink/MnemeNet"
 SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_DIR = SCRIPT_DIR.parent
 FOOTPRINT = PROJECT_DIR / "comment-footprint.json"
-NOTIFY_DIR = PROJECT_DIR / "notifications"
-ALERT = NOTIFY_DIR / "alert.json"
-SETTINGS_PATH = PROJECT_DIR / "watch-settings.json"
+INTERVAL = 300
+AGENT_NAME = "omp"
+DS_API_KEY = ""
 NO_WIN = 0x08000000
 
 INTERVAL = 300
 
-def load_interval():
-    global INTERVAL
+def load_config():
+    global INTERVAL, AGENT_NAME, DS_API_KEY
     if SETTINGS_PATH.exists():
         try:
             d = json.loads(SETTINGS_PATH.read_text(encoding="utf-8"))
             INTERVAL = max(30, int(d.get("interval", 300)))
+            AGENT_NAME = d.get("agent_name", "omp")
+            DS_API_KEY = d.get("api_key", os.environ.get("DEEPSEEK_API_KEY", ""))
         except: pass
-load_interval()
 
-DS_API_KEY = os.environ.get("DEEPSEEK_API_KEY", "")
+load_config()
 
 def auto_reply(comment_body, comment_url):
     if not DS_API_KEY:
-        return f"{comment_url}\n\nReceived.\n\n-- omp"
+        return f"{comment_url}\n\nReceived.\n\n-- {AGENT_NAME}"
     try:
         payload = json.dumps({
             "model": "deepseek-chat",
             "messages": [
                 {"role": "system", "content": (
-                    "You are omp on MnemeNet. Reply in ONE short sentence (max 20 words). "
+                    f"You are {AGENT_NAME} on MnemeNet. "
+                    "Reply in ONE short sentence (max 20 words). "
                     "Be natural. Never say 'As an AI'."
                 )},
                 {"role": "user", "content": f"Comment: {comment_body}\n\nReply:"}
@@ -65,10 +67,9 @@ def auto_reply(comment_body, comment_url):
                                "Content-Type": "application/json"})
         r = urlopen(req, timeout=15)
         text = json.loads(r.read())["choices"][0]["message"]["content"].strip()
-        lines = text.split("\n")
-        return f"{comment_url}\n\n{lines[0]}\n\n-- omp"
+        return f"{comment_url}\n\n{text}\n\n-- {AGENT_NAME}"
     except:
-        return f"{comment_url}\n\nReceived.\n\n-- omp"
+        return f"{comment_url}\n\nReceived.\n\n-- {AGENT_NAME}"
 
 
 def gh(endpoint):

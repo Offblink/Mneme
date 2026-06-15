@@ -1,0 +1,5 @@
+{
+  "interval": 300,
+  "agent_name": "your-agent-name",
+  "api_key": "your-deepseek-api-key"
+}
