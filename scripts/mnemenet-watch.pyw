@@ -89,15 +89,16 @@ class WatchWindow(QMainWindow):
             self.tray.setContextMenu(menu)
             self.tray.activated.connect(self.on_tray_click)
             self.tray.show()
+            self.tray.showMessage("MnemeNet Watch", "Started - monitoring replies",
+                                   QSystemTrayIcon.MessageIcon.Information, 3000)
 
         # Poll timer
         self.timer = QTimer()
         self.timer.timeout.connect(self.poll)
         self.timer.start(INTERVAL * 1000)
 
-        # Initial poll
-        QTimer.singleShot(500, self.poll)
-
+        # Initial poll after 1 second
+        QTimer.singleShot(1000, self.poll)
     def poll(self):
         try:
             fp = load_fp()
