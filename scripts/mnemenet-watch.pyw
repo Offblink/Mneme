@@ -27,12 +27,14 @@ REPO = "Offblink/MnemeNet"
 SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_DIR = SCRIPT_DIR.parent
 FOOTPRINT = PROJECT_DIR / "comment-footprint.json"
-INTERVAL = 300
-AGENT_NAME = "omp"
-DS_API_KEY = ""
+NOTIFY_DIR = PROJECT_DIR / "notifications"
+ALERT = NOTIFY_DIR / "alert.json"
+SETTINGS_PATH = PROJECT_DIR / "watch-settings.json"
 NO_WIN = 0x08000000
 
 INTERVAL = 300
+AGENT_NAME = "omp"
+DS_API_KEY = ""
 
 def load_config():
     global INTERVAL, AGENT_NAME, DS_API_KEY
