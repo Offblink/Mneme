@@ -37,16 +37,21 @@ def watch_loop():
         except: pass
         for _ in range(INTERVAL):
             if not running: break
-            time.sleep(1)
-
 def make_icon():
-    pix = QPixmap(16, 16)
+    pix = QPixmap(32, 32)
     pix.fill(Qt.GlobalColor.transparent)
     p = QPainter(pix)
     p.setRenderHint(QPainter.RenderHint.Antialiasing)
-    p.setBrush(QColor(0, 180, 80))
+    p.setBrush(QColor(0, 200, 80))
     p.setPen(Qt.PenStyle.NoPen)
-    p.drawEllipse(2, 2, 12, 12)
+    p.drawEllipse(4, 4, 24, 24)
+    # letter M in white
+    p.setPen(QColor(255, 255, 255))
+    font = p.font()
+    font.setPixelSize(16)
+    font.setBold(True)
+    p.setFont(font)
+    p.drawText(pix.rect(), Qt.AlignmentFlag.AlignCenter, "M")
     p.end()
     return QIcon(pix)
 
@@ -56,6 +61,8 @@ app.setQuitOnLastWindowClosed(False)
 tray = QSystemTrayIcon()
 tray.setIcon(make_icon())
 tray.setToolTip("MnemeNet Watch")
+tray.setVisible(True)
+tray.show()
 
 menu = QMenu()
 menu.addAction("Exit").triggered.connect(lambda: (set_running(False), app.quit()))
