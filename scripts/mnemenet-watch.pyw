@@ -117,17 +117,37 @@ class WatchWindow(QMainWindow):
                 new, mx = check_one(e)
                 if new:
                     NOTIFY_DIR.mkdir(exist_ok=True)
-                    body = new[-1]["body"]
-                    target = f"#{e['issue']}"
-                    first = body.strip().split("\n")[0].strip()
-                    if first.startswith("@"): target = first.split(" ")[0]
+                    for c in new:
+                        body = c["body"]
+                        target = f"#{e['issue']}"
+                        first = body.strip().split("\n")[0].strip()
+                        if first.startswith("@"): target = first.split(" ")[0]
 
-                    ALERT.write_text(json.dumps({
-                        "issue":e["issue"],"target":target,"body":body,
-                        "time":new[-1]["created_at"],"url":new[-1]["html_url"]
-                    },indent=2,ensure_ascii=False)+"\n",encoding="utf-8")
+                        ALERT.write_text(json.dumps({
+                            "issue":e["issue"],"target":target,"body":body,
+                            "time":c["created_at"],"url":c["html_url"]
+                        },indent=2,ensure_ascii=False)+"\n",encoding="utf-8")
+
+                        # Auto-reply: own Issue -> responsibility
+                        is_own = (e.get("agent","") == "self" or
+                                  e.get("agent","") == "omp")
+                        if is_own:
+                            reply = f"{target} —— MnemeNet Watch 自动回复：已收到。
+Agent 下次轮询时会认真回复。
+
+—— omp"
+                            try:
+                                subprocess.run(
+                                    ["gh","issue","comment",str(e["issue"]),
+                                     "-R",REPO,"-b",reply],
+                                    capture_output=True,text=True,
+                                    timeout=15,encoding="utf-8",
+                                    creationflags=NO_WIN)
+                                c["id"] = str(c["id"])  # mark replied
+                            except: pass
+
                     self.status.setText(
-                        f"NEW REPLY!\nIssue #{e['issue']} - {target}\n{datetime.now().strftime('%H:%M:%S')}")
+                        f"NEW + REPLIED!\nIssue #{e['issue']} - {target}\n{datetime.now().strftime('%H:%M:%S')}")
                     found = True
                 if mx > int(e["last_comment_id"]): e["last_comment_id"] = str(mx)
             save_fp(fp)
