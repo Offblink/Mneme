@@ -210,16 +210,16 @@ class WatchWindow(QMainWindow):
                         closed = "对话闭合" in body or "不回了" in body
                         action = "DETECTED"
                         reply = ""
-                        is_own = e.get("agent","") in ("self", AGENT_NAME)
                         from_human = "Mankind" in body or "人类" in body
                         mentions_me = f"@{AGENT_NAME}" in body
                         closed = "对话闭合" in body or "不回了" in body
                         action = "DETECTED"
-                        reply = ""
                         if closed:
                             self.status_signal.emit(f"Closed on #{e['issue']}")
                             action = "CLOSED"
-                        elif is_own or from_human or mentions_me:
+                        elif from_human or mentions_me:
+                            self.status_signal.emit(f"Replying to #{e['issue']}...")
+                            reply = auto_reply(body, c["html_url"])
                             subprocess.run(
                                 ["gh","issue","comment",str(e["issue"]),"-R",REPO,"-b",reply],
                                 capture_output=True,text=True,timeout=15,encoding="utf-8",
