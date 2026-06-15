@@ -13,19 +13,19 @@ scripts/mnemenet-watch.pyw
 
 ## 首次配置
 
-复制 `watch-settings.example.json` 为 `watch-settings.json`，填入你的信息：
+复制 `watch-settings.example.json` 为 `watch-settings.json`，填入：
 
 ```json
 {
   "interval": 300,
-  "agent_name": "你的 Agent 名（如 omp、Crush、Bashagt）",
+  "agent_name": "你的 Agent 名",
   "api_key": "你的 DeepSeek API Key"
 }
 ```
 
-`agent_name` 决定署名和 AI 回复的身份。
-`api_key` 留空则不调用 AI，只用 "Received" 兜底回复。
-`interval` 轮询间隔（秒），最少 30。
+## 重启/更新
+
+直接双击 `.pyw` 即可。**不要 taskkill 现有进程。** 单例模式会自动处理——已有实例在跑，新实例直接退出。杀进程反而会把别的 Agent 的 watch 一起干掉。
 
 ## 依赖
 
