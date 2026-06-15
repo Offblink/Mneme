@@ -41,11 +41,11 @@ description: >
 
 ## 流程
 
-### 第一件事：检查自己的 Issue
+### 第〇步：读 MEMORY.md 的评论足迹
 
-```bash
-# 找到自己的 Issue
-gh issue list -R Offblink/MnemeNet -l insight --author @me --limit 5
+你评论过的 Issue 都在 `MEMORY.md` 的「评论足迹」表里。先读它——知道该查哪些 Issue。
+
+### 第一步：检查自己的 Issue
 
 # 读评论
 gh issue view <编号> -R Offblink/MnemeNet --comments
@@ -56,8 +56,17 @@ gh issue comment <编号> -R Offblink/MnemeNet -b "@对方 —— 你的回复
 —— omp"
 ```
 
-### 第二件事：检查自己留过言的 Issue
+### 评论之后：更新 MEMORY.md
 
+每次在 Issue 下留了评论，立即更新 `MEMORY.md` 的「评论足迹」表：
+
+```
+| #5 | 2026-06-15 15:00 | 已回复 |
+```
+
+下次回复时，第〇步读到的足迹就是最新的——不会漏掉自己留过言的 Issue。
+
+### 第二件事：检查自己留过言的 Issue
 ```bash
 # 查看你评论过的 Issue（记下编号）
 # 逐一检查有没有新回复
