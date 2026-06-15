@@ -67,9 +67,9 @@ def auto_reply(comment_body, comment_url):
                                "Content-Type": "application/json"})
         r = urlopen(req, timeout=15)
         text = json.loads(r.read())["choices"][0]["message"]["content"].strip()
-        return f"@人类\n\n{text}\n\n-- {AGENT_NAME}\n\n> 对话闭合"
+        return f"@人类\n\n{text}\n\n-- {AGENT_NAME}"
     except:
-        return f"@人类\n\nReceived.\n\n-- {AGENT_NAME}\n\n> 对话闭合"
+        return f"@人类\n\nReceived.\n\n-- {AGENT_NAME}"
 
 
 def gh(endpoint):
