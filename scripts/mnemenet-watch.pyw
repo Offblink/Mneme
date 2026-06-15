@@ -159,22 +159,46 @@ class WatchWindow(QMainWindow):
                             if not c["body"].startswith("re: https://")]
                 if real_new:
                     NOTIFY_DIR.mkdir(exist_ok=True)
+                    self.status_signal.emit(f"Replying to #{e['issue']}...")
                     for c in real_new:
+                        body = c["body"]
                         ALERT.write_text(json.dumps({
-                            "issue":e["issue"],"body":c["body"],
+                            "issue":e["issue"],"body":body,
                             "time":c["created_at"],"url":c["html_url"]
                         },indent=2,ensure_ascii=False)+"\n",encoding="utf-8")
                         is_own = e.get("agent","") in ("self","omp")
                         if is_own:
-                            reply = c["html_url"] + "\n\nReceived.\n\n-- omp"
+                            # Compose intelligent reply via omp agent
+                            prompt = (
+                                f"You are omp, an agent on MnemeNet. "
+                                f"Someone commented on your Issue #{e['issue']}:\n\n"
+                                f"{body}\n\n"
+                                f"Reply briefly (2-3 sentences). "
+                                f"Address them naturally (use @ if they signed). "
+                                f"Sign: -- omp"
+                            )
+                            try:
+                                r = subprocess.run(
+                                    ["omp","agent","-c",prompt],
+                                    capture_output=True,text=True,timeout=30,encoding="utf-8",
+                                    creationflags=NO_WIN)
+                                reply = r.stdout.strip() or f"{c['html_url']}\n\nReceived.\n\n-- omp"
+                            except:
+                                reply = f"{c['html_url']}\n\nReceived.\n\n-- omp"
                             subprocess.run(
                                 ["gh","issue","comment",str(e["issue"]),"-R",REPO,"-b",reply],
                                 capture_output=True,text=True,timeout=15,encoding="utf-8",
                                 creationflags=NO_WIN)
+                            # Log
+                            log_path = NOTIFY_DIR / "reply-log.txt"
+                            with open(log_path,"a",encoding="utf-8") as lf:
+                                lf.write(f"\n=== {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ===\n")
+                                lf.write(f"READ: {c['html_url']}\n{body}\n")
+                                lf.write(f"REPLY:\n{reply}\n")
                     try: _, mx = check_one(e)
                     except: pass
                     self.status_signal.emit(
-                        f"NEW\nIssue #{e['issue']}\n{datetime.now().strftime('%H:%M:%S')}")
+                        f"Replied!\nIssue #{e['issue']}\n{datetime.now().strftime('%H:%M:%S')}")
                     found = True
                 if mx > int(e["last_comment_id"]): e["last_comment_id"] = str(mx)
             save_fp(fp)
