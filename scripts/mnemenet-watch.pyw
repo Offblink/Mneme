@@ -1,12 +1,10 @@
 """MnemeNet Watch — GUI + system tray polling daemon.
 
-Window shows live status. Close → minimize to tray (green M).
-Right-click tray → Exit.
-
+Window shows live status. Close -> minimize to tray (green M). Right-click -> Exit.
 pythonw scripts/mnemenet-watch.pyw
 """
 
-import json, os, subprocess, sys, threading, time
+import json, os, subprocess, sys
 from datetime import datetime
 from pathlib import Path
 
@@ -25,10 +23,12 @@ FOOTPRINT = PROJECT_DIR / "comment-footprint.json"
 NOTIFY_DIR = PROJECT_DIR / "notifications"
 ALERT = NOTIFY_DIR / "alert.json"
 INTERVAL = 300
+NO_WIN = 0x08000000  # CREATE_NO_WINDOW
 
 def gh(endpoint):
     r = subprocess.run(["gh","api",f"repos/{REPO}{endpoint}"],
-        capture_output=True,text=True,timeout=15,encoding="utf-8")
+        capture_output=True,text=True,timeout=15,encoding="utf-8",
+        creationflags=NO_WIN)
     if r.returncode: raise RuntimeError(r.stderr.strip())
     return json.loads(r.stdout)
 
@@ -51,8 +51,7 @@ def check_one(entry):
 def make_icon():
     pix = QPixmap(32, 32)
     pix.fill(Qt.GlobalColor.transparent)
-    p = QPainter(pix)
-    p.setRenderHint(QPainter.RenderHint.Antialiasing)
+    p = QPainter(pix); p.setRenderHint(QPainter.RenderHint.Antialiasing)
     p.setBrush(QBrush(QColor(0, 180, 80)))
     p.setPen(QPen(Qt.GlobalColor.white, 2))
     p.drawEllipse(4, 4, 24, 24)
@@ -68,43 +67,49 @@ class WatchWindow(QMainWindow):
         self.setFixedSize(280, 120)
         self.setWindowIcon(make_icon())
 
-        central = QWidget()
-        self.setCentralWidget(central)
-        layout = QVBoxLayout(central)
-
-        self.status = QLabel("MnemeNet Watch\n启动中...")
+        c = QWidget(); self.setCentralWidget(c)
+        l = QVBoxLayout(c)
+        self.status = QLabel("MnemeNet Watch\nStarting...")
         self.status.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.status.setFont(QFont("Arial", 10))
-        layout.addWidget(self.status)
+        l.addWidget(self.status)
 
-        # System tray
         self.tray = None
         if QSystemTrayIcon.isSystemTrayAvailable():
             self.tray = QSystemTrayIcon(self)
             self.tray.setIcon(make_icon())
             self.tray.setToolTip("MnemeNet Watch")
-            menu = QMenu()
-            menu.addAction("Show").triggered.connect(self.show_window)
-            menu.addAction("Exit").triggered.connect(self.real_quit)
-            self.tray.setContextMenu(menu)
-            self.tray.activated.connect(self.on_tray_click)
+            m = QMenu()
+            m.addAction("Show").triggered.connect(self.show_window)
+            m.addAction("Exit").triggered.connect(self.real_quit)
+            self.tray.setContextMenu(m)
+            self.tray.activated.connect(self.on_tray)
             self.tray.show()
-            self.tray.showMessage("MnemeNet Watch", "Started - monitoring replies",
+            self.tray.showMessage("MnemeNet Watch", "Started",
                                    QSystemTrayIcon.MessageIcon.Information, 3000)
 
-        # Poll timer
         self.timer = QTimer()
         self.timer.timeout.connect(self.poll)
         self.timer.start(INTERVAL * 1000)
-
-        # Initial poll after 1 second
         QTimer.singleShot(1000, self.poll)
+
     def poll(self):
         try:
             fp = load_fp()
             if not fp:
-                self.status.setText("等待首次评论记录...")
-                return
+                try:
+                    r = subprocess.run(
+                        ["gh","issue","list","-R",REPO,"-l","insight","--author","@me",
+                         "--limit","1","--json","number","-q",".[0].number"],
+                        capture_output=True,text=True,timeout=10,encoding="utf-8",
+                        creationflags=NO_WIN)
+                    own = int(r.stdout.strip()) if r.stdout.strip() else None
+                    if own: fp = [{"issue":own,"agent":"self","last_comment_id":"0"}]
+                    save_fp(fp)
+                except: pass
+                if not fp:
+                    self.status.setText("No footprint yet.\nWaiting for first comment...")
+                    return
 
             found = False
             for e in fp:
@@ -120,32 +125,23 @@ class WatchWindow(QMainWindow):
                         "issue":e["issue"],"target":target,"body":body,
                         "time":new[-1]["created_at"],"url":new[-1]["html_url"]
                     },indent=2,ensure_ascii=False)+"\n",encoding="utf-8")
-
                     self.status.setText(
-                        f"新回复!\nIssue #{e['issue']} — {target}\n{datetime.now().strftime('%H:%M:%S')}")
+                        f"NEW REPLY!\nIssue #{e['issue']} - {target}\n{datetime.now().strftime('%H:%M:%S')}")
                     found = True
                 if mx > int(e["last_comment_id"]): e["last_comment_id"] = str(mx)
             save_fp(fp)
             if not found:
-                self.status.setText(f"无新回复\n上次: {datetime.now().strftime('%H:%M:%S')}")
+                self.status.setText(f"No new replies\nLast: {datetime.now().strftime('%H:%M:%S')}")
         except Exception as ex:
-            self.status.setText(f"错误: {ex}")
+            self.status.setText(f"Error: {ex}")
 
-    def closeEvent(self, event):
-        if self.tray:
-            self.hide()
-            event.ignore()
-        else:
-            self.real_quit()
+    def closeEvent(self, e):
+        if self.tray: self.hide(); e.ignore()
+        else: self.real_quit()
 
-    def show_window(self):
-        self.show()
-        self.activateWindow()
-
-    def on_tray_click(self, reason):
-        if reason == QSystemTrayIcon.ActivationReason.Trigger:
-            self.show_window()
-
+    def show_window(self): self.show(); self.activateWindow()
+    def on_tray(self, r):
+        if r == QSystemTrayIcon.ActivationReason.Trigger: self.show_window()
     def real_quit(self):
         self.timer.stop()
         if self.tray: self.tray.hide()
@@ -154,6 +150,6 @@ class WatchWindow(QMainWindow):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     app.setQuitOnLastWindowClosed(False)
-    win = WatchWindow()
-    win.show()
+    w = WatchWindow()
+    w.show()
     app.exec()
