@@ -137,7 +137,6 @@ class WatchWindow(QMainWindow):
                         self.status_signal.emit("No footprint yet")
                         time.sleep(INTERVAL)
                         continue
-
                 found = False
                 for e in fp:
                     new, mx = check_one(e)
@@ -154,7 +153,7 @@ class WatchWindow(QMainWindow):
                             },indent=2,ensure_ascii=False)+"\n",encoding="utf-8")
                             is_own = e.get("agent","") in ("self","omp")
                             if is_own:
-                                reply = f"{target} -- Auto-reply: received.\n\n-- omp"
+                                reply = f"Issue #{e['issue']} comment received.\n\n-- omp"
                                 try:
                                     subprocess.run(
                                         ["gh","issue","comment",str(e["issue"]),"-R",REPO,"-b",reply],
