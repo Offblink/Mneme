@@ -191,6 +191,7 @@ class WatchWindow(QMainWindow):
                 if not fp:
                     self.status_signal.emit("No footprint yet")
                     return
+            found = False
             for e in fp:
                 new, mx = check_one(e)
                 real_new = [c for c in new
