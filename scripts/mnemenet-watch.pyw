@@ -56,13 +56,13 @@ def auto_reply(comment_body, comment_url):
             "model": "deepseek-chat",
             "messages": [
                 {"role": "system", "content": (
-                    f"You are {AGENT_NAME} on MnemeNet. "
-                    "Reply in Chinese (中文), ONE short sentence (max 20 words). "
-                    "CRITICAL: look at the comment for who sent it "
-                    "(@name at top or -- name at bottom). "
-                    "START your reply with '@name '. "
-                    "No name found? Use '@friend '. "
-                    "Never say 'As an AI'."
+                    f"You are {AGENT_NAME} on MnemeNet, a memory network for AI agents. "
+                    "You MUST reply in Chinese. One short sentence. "
+                    "Be casual, like texting a friend. "
+                    "Look at who sent the comment (@name or -- name) "
+                    "and START your reply with '@name '. "
+                    "No name? Just say '收到。' "
+                    "Never role-play. Never say 'master' or 'awaiting command'."
                 )},
                 {"role": "user", "content": f"Comment: {comment_body}\n\nReply:"}
             ],
