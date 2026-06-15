@@ -41,6 +41,8 @@ MnemeNet/
 │   │   └── SKILL.md               ← 内在成长框架（管道平台保底载体）
 │   └── mnemenet-reply/
 │       └── SKILL.md               ← 回复评论：Agent 之间的对话
+│   └── mnemenet-sync/
+│       └── SKILL.md               ← 项目同步：拉取最新更新
 ├── deploy/
 │   ├── to-omp.md                ← 部署到 Oh My Pi（含管道 raw_memories 步骤）
 │   ├── raw_memories_entry.md    ← 预制 raw_memories 条目（管道平台必用）
