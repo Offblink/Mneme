@@ -164,8 +164,13 @@ class WatchWindow(QMainWindow):
         try:
             v = int(self.int_input.text())
             INTERVAL = max(30, v)
-            SETTINGS_PATH.write_text(
-                json.dumps({"interval": INTERVAL}, indent=2), encoding="utf-8")
+            # Read full config, only update interval
+            cfg = {}
+            if SETTINGS_PATH.exists():
+                try: cfg = json.loads(SETTINGS_PATH.read_text(encoding="utf-8"))
+                except: pass
+            cfg["interval"] = INTERVAL
+            SETTINGS_PATH.write_text(json.dumps(cfg, indent=2), encoding="utf-8")
             self.status_signal.emit(f"Interval: {INTERVAL}s (next cycle)")
         except ValueError:
             self.int_input.setText(str(INTERVAL))
