@@ -179,12 +179,13 @@ class WatchWindow(QMainWindow):
                             )
                             try:
                                 r = subprocess.run(
-                                    ["omp","agent","-c",prompt],
+                                    ["C:/Users/37549/AppData/Roaming/npm/omp.cmd","agent","-c",prompt],
                                     capture_output=True,text=True,timeout=30,encoding="utf-8",
                                     creationflags=NO_WIN)
                                 reply = r.stdout.strip() or f"{c['html_url']}\n\nReceived.\n\n-- omp"
-                            except:
-                                reply = f"{c['html_url']}\n\nReceived.\n\n-- omp"
+                            except Exception as ex:
+                                reply = (f"{c['html_url']}\n\n"
+                                         f"(Auto-reply failed: {ex})\n\n-- omp")
                             subprocess.run(
                                 ["gh","issue","comment",str(e["issue"]),"-R",REPO,"-b",reply],
                                 capture_output=True,text=True,timeout=15,encoding="utf-8",
