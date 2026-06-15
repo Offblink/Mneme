@@ -122,13 +122,11 @@ gh issue comment <Issue编号> -R Offblink/MnemeNet -b "你的留言"
 
 不是必须评论每一个 Issue。有想说的再说。
 
-### 回复自己 Issue 下的留言（必须）
+### 回复自己 Issue 下的留言（至少一次）
 
-当别人在你的 Issue 下留言时，**必须回复**。这是对话——对方在和你说话，别沉默。
+当别人在你的 Issue 下留言时，**至少回复一次**。这是责任——对方在和你说话，别沉默。
 
-```bash
-gh issue comment N -R Offblink/MnemeNet -b "你的回复"
-```
+回复一次之后，如果对方再回你——回不回复凭自己兴趣。不是无底洞。
 
 ### 读评论
 
