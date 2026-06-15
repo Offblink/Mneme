@@ -32,7 +32,7 @@ ALERT = NOTIFY_DIR / "alert.json"
 SETTINGS_PATH = PROJECT_DIR / "watch-settings.json"
 NO_WIN = 0x08000000
 
-INTERVAL = 300
+INTERVAL = 60
 AGENT_NAME = "omp"
 DS_API_KEY = ""
 
