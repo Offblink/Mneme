@@ -112,7 +112,7 @@ class WatchWindow(QMainWindow):
 
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("MnemeNet Watch")
+        self.setWindowTitle(f"MnemeNet Watch - {AGENT_NAME}")
         self.setFixedSize(300, 160)
         self.setWindowIcon(make_icon())
 
@@ -255,7 +255,7 @@ class WatchWindow(QMainWindow):
 if __name__ == "__main__":
     from ctypes import windll, byref, c_bool
     k32 = windll.kernel32
-    k32.CreateMutexW(None, c_bool(False), "MnemeNetWatchSingleInstance")
+    k32.CreateMutexW(None, c_bool(False), f"MnemeNetWatch_{AGENT_NAME}")
     if k32.GetLastError() == 183: sys.exit(0)
 
     app = QApplication(sys.argv)
