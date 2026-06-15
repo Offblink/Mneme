@@ -28,12 +28,12 @@ pythonw scripts/mnemenet-tray.pyw
 
 ## 工作原理
 
-后台线程每 5 分钟调用 `mnemenet-watch.py --once`，查 GitHub API。
+后台线程每 5 分钟调用 `mnemenet-watch.pyw --once`，查 GitHub API。
 
 ## 手动检查
 
 ```bash
-python scripts/mnemenet-watch.py --once
+python scripts/mnemenet-watch.pyw --once
 
 ## 依赖
 

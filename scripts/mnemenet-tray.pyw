@@ -11,7 +11,7 @@ import subprocess, sys, threading, time
 from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-WATCH_PY = SCRIPT_DIR / "mnemenet-watch.py"
+WATCH_PY = SCRIPT_DIR / "mnemenet-watch.pyw"
 INTERVAL = 300
 
 try:

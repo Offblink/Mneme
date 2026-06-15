@@ -3,8 +3,8 @@
 No pip deps. Only requires gh CLI (already installed by agent deployment).
 Checks comment-footprint.json every 5 min for new comments.
 Usage:
-    python scripts/mnemenet-watch.py              # foreground, every 5 min
-    python scripts/mnemenet-watch.py --once       # run once and exit
+    python scripts/mnemenet-watch.pyw              # foreground, every 5 min
+    python scripts/mnemenet-watch.pyw --once       # run once and exit
 """
 
 import json
