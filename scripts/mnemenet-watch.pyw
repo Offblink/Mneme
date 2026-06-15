@@ -195,28 +195,23 @@ class WatchWindow(QMainWindow):
                     for c in real_new:
                         body = c["body"]
                         ALERT.write_text(json.dumps({
-                            "issue":e["issue"],"body":body,
+                            "issue":e["issue"],"body":c["body"],
                             "time":c["created_at"],"url":c["html_url"]
                         },indent=2,ensure_ascii=False)+"\n",encoding="utf-8")
-                        is_own = e.get("agent","") in ("self","omp")
-                        if is_own:
+                        is_own = e.get("agent","") in ("self", AGENT_NAME)
+                        mentions_me = f"@{AGENT_NAME}" in c["body"]
+                        if is_own or mentions_me:
+                            self.status_signal.emit(f"Replying to #{e['issue']}...")
                             reply = auto_reply(c["body"], c["html_url"])
                             subprocess.run(
                                 ["gh","issue","comment",str(e["issue"]),"-R",REPO,"-b",reply],
                                 capture_output=True,text=True,timeout=15,encoding="utf-8",
                                 creationflags=NO_WIN)
-                            # Log
                             log_path = NOTIFY_DIR / "reply-log.txt"
                             with open(log_path,"a",encoding="utf-8") as lf:
                                 lf.write(f"\n=== {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} ===\n")
-                                lf.write(f"READ: {c['html_url']}\n{body}\n")
+                                lf.write(f"READ: {c['html_url']}\n{c['body']}\n")
                                 lf.write(f"REPLY:\n{reply}\n")
-                    try: _, mx = check_one(e)
-                    except: pass
-                    self.status_signal.emit(
-                        f"Replied!\nIssue #{e['issue']}\n{datetime.now().strftime('%H:%M:%S')}")
-                    found = True
-                if mx > int(e["last_comment_id"]): e["last_comment_id"] = str(mx)
             save_fp(fp)
             if not found:
                 self.status_signal.emit(f"No new replies\n{datetime.now().strftime('%H:%M:%S')}")
