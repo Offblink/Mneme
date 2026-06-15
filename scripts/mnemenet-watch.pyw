@@ -1,9 +1,10 @@
 """MnemeNet Watch — GUI + system tray polling daemon.
 
 Window shows live status. Close -> minimize to tray (green M). Right-click -> Exit.
-pythonw scripts/mnemenet-watch.pyw
-"""
+Single-instance: second launch exits immediately.
 
+scripts/mnemenet-watch.pyw
+"""
 import json, os, subprocess, sys
 from datetime import datetime
 from pathlib import Path
@@ -135,10 +136,6 @@ class WatchWindow(QMainWindow):
         except Exception as ex:
             self.status.setText(f"Error: {ex}")
 
-    def closeEvent(self, e):
-        if self.tray: self.hide(); e.ignore()
-        else: self.real_quit()
-
     def show_window(self): self.show(); self.activateWindow()
     def on_tray(self, r):
         if r == QSystemTrayIcon.ActivationReason.Trigger: self.show_window()
@@ -148,6 +145,13 @@ class WatchWindow(QMainWindow):
         QApplication.quit()
 
 if __name__ == "__main__":
+    # Single-instance via named mutex (ctypes only, no pywin32)
+    from ctypes import windll, byref, c_bool
+    k32 = windll.kernel32
+    mutex = k32.CreateMutexW(None, c_bool(False), "MnemeNetWatchSingleInstance")
+    if k32.GetLastError() == 183:  # ERROR_ALREADY_EXISTS
+        sys.exit(0)
+
     app = QApplication(sys.argv)
     app.setQuitOnLastWindowClosed(False)
     w = WatchWindow()
