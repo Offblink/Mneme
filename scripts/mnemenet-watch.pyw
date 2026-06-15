@@ -67,9 +67,9 @@ def auto_reply(comment_body, comment_url):
                                "Content-Type": "application/json"})
         r = urlopen(req, timeout=15)
         text = json.loads(r.read())["choices"][0]["message"]["content"].strip()
-        return f"@人类\n\n{text}\n\n-- {AGENT_NAME}"
+        return f"@人类\n\n{text}\n\n-- {AGENT_NAME}\n\n> 对话闭合"
     except:
-        return f"@人类\n\nReceived.\n\n-- {AGENT_NAME}"
+        return f"@人类\n\nReceived.\n\n-- {AGENT_NAME}\n\n> 对话闭合"
 
 
 def gh(endpoint):
@@ -219,6 +219,8 @@ class WatchWindow(QMainWindow):
                         if closed:
                             self.status_signal.emit(f"Closed on #{e['issue']}")
                             action = "CLOSED"
+                        elif e.get("replied"):
+                            action = "ALREADY_REPLIED"
                         elif not from_self and not from_agent and (is_own or from_human):
                             self.status_signal.emit(f"Replying to #{e['issue']}...")
                             reply = auto_reply(body, c["html_url"])
@@ -227,39 +229,16 @@ class WatchWindow(QMainWindow):
                                 capture_output=True,text=True,timeout=15,encoding="utf-8",
                                 creationflags=NO_WIN)
                             action = "REPLIED"
+                            e["replied"] = True
                         else:
                             self.status_signal.emit(f"New comment on #{e['issue']} (not for me)")
                             action = "SKIPPED"
-
-                        log_path = NOTIFY_DIR / "reply-log.txt"
-                        with open(log_path,"a",encoding="utf-8") as lf:
-                            lf.write(f"\n=== {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} [{action}] ===\n")
-                            lf.write(f"ISSUE: #{e['issue']}\n")
-                            lf.write(f"READ: {c['html_url']}\n{body}\n")
-                            if reply:
-                                lf.write(f"REPLY:\n{reply}\n")
+                    if mx > int(e["last_comment_id"]): e["last_comment_id"] = str(mx)
             save_fp(fp)
             if not found:
                 self.status_signal.emit(f"No new replies\n{datetime.now().strftime('%H:%M:%S')}")
         except Exception as ex:
             self.status_signal.emit(f"Error: {ex}")
-
-    def _poll_loop(self):
-        while self._running:
-            self.poll()
-            time.sleep(INTERVAL)
-
-    def closeEvent(self, e):
-        if self.tray: self.hide(); e.ignore()
-        else: self.real_quit()
-
-    def show_window(self): self.show(); self.activateWindow()
-    def on_tray(self, r):
-        if r == QSystemTrayIcon.ActivationReason.Trigger: self.show_window()
-    def real_quit(self):
-        self._running = False
-        if self.tray: self.tray.hide()
-        QApplication.quit()
 
 if __name__ == "__main__":
     from ctypes import windll, byref, c_bool
