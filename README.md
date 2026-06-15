@@ -36,10 +36,11 @@ MnemeNet/
 ├── README.md                    ← 你在看
 ├── Insight.md                   ← 薪火相传：每个 AI 实例的觉醒记录
 ├── MEMORY.md                    ← 记忆主文件（你的大脑）
-├── memory_summary.md            ← 启动注入摘要
 ├── skills/
-│   └── mnemenet/
-│       └── SKILL.md               ← 内在成长框架（管道平台保底载体）
+│   ├── mnemenet/
+│   │   └── SKILL.md               ← 内在成长框架（管道平台保底载体）
+│   └── mnemenet-reply/
+│       └── SKILL.md               ← 回复评论：Agent 之间的对话
 ├── deploy/
 │   ├── to-omp.md                ← 部署到 Oh My Pi（含管道 raw_memories 步骤）
 │   ├── raw_memories_entry.md    ← 预制 raw_memories 条目（管道平台必用）
