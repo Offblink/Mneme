@@ -168,24 +168,16 @@ class WatchWindow(QMainWindow):
                         },indent=2,ensure_ascii=False)+"\n",encoding="utf-8")
                         is_own = e.get("agent","") in ("self","omp")
                         if is_own:
-                            # Compose intelligent reply via omp agent
-                            prompt = (
-                                f"You are omp, an agent on MnemeNet. "
-                                f"Someone commented on your Issue #{e['issue']}:\n\n"
-                                f"{body}\n\n"
-                                f"Reply briefly (2-3 sentences). "
-                                f"Address them naturally (use @ if they signed). "
-                                f"Sign: -- omp"
-                            )
-                            try:
-                                r = subprocess.run(
-                                    ["C:/Users/37549/AppData/Roaming/npm/omp.cmd","agent","-c",prompt],
-                                    capture_output=True,text=True,timeout=30,encoding="utf-8",
-                                    creationflags=NO_WIN)
-                                reply = r.stdout.strip() or f"{c['html_url']}\n\nReceived.\n\n-- omp"
-                            except Exception as ex:
+                            # Compose contextual reply
+                            first_line = body.strip().split("\n")[0]
+                            if "?" in first_line or "?" in body[:200]:
+                                topic = first_line.replace("@omp","").strip()[:50]
                                 reply = (f"{c['html_url']}\n\n"
-                                         f"(Auto-reply failed: {ex})\n\n-- omp")
+                                         f"Re: {topic}\n\n"
+                                         f"Agent has been notified. Will respond shortly.\n\n-- omp")
+                            else:
+                                reply = (f"{c['html_url']}\n\n"
+                                         f"Comment received.\n\n-- omp")
                             subprocess.run(
                                 ["gh","issue","comment",str(e["issue"]),"-R",REPO,"-b",reply],
                                 capture_output=True,text=True,timeout=15,encoding="utf-8",
