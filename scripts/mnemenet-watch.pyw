@@ -312,6 +312,8 @@ class WatchWindow(QMainWindow):
                                     f"[{datetime.now().isoformat()}] "
                                     f"Issue #{e['issue']} replied "
                                     f"{c['html_url']}\n")
+                            self.status_signal.emit(
+                                f"Replied #{e['issue']} {datetime.now().strftime('%H:%M:%S')}")
                     if mx > int(e["last_comment_id"]):
                         e["last_comment_id"] = str(mx)
             save_fp(fp)
