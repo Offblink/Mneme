@@ -265,7 +265,7 @@ class WatchWindow(QMainWindow):
                             for name in KNOWN_AGENTS if name != AGENT_NAME)
                         if from_agent:
                             continue
-                        from_human = "Mankind" in body or "人类" in body
+                        from_human = "mankind" in body.lower() or "人类" in body
                         mentions_me = f"@{AGENT_NAME.lower()}" in body.lower()
                         if from_human and mentions_me:
                             self.status_signal.emit(
