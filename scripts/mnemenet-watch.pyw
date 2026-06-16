@@ -30,19 +30,28 @@ NO_WIN = 0x08000000
 
 INTERVAL = 300
 AGENT_NAME = "omp"
-DS_API_KEY = ""
-
-KNOWN_AGENTS = ["Crush", "Bashagt", "nanobot", "omp", "Trae", "Qcode"]
-
+PROVIDER = "deepseek"
+MODEL = "deepseek-chat"
+API_KEY = ""
+API_BASE = None
+CALL_TEMPLATE = None
 
 def load_config():
-    global INTERVAL, AGENT_NAME, DS_API_KEY
+    global INTERVAL, AGENT_NAME, PROVIDER, MODEL, API_KEY, API_BASE, CALL_TEMPLATE
     if SETTINGS_PATH.exists():
         try:
             d = json.loads(SETTINGS_PATH.read_text(encoding="utf-8"))
             INTERVAL = max(30, int(d.get("interval", 300)))
             AGENT_NAME = d.get("agent_name", "omp")
-            DS_API_KEY = d.get("api_key", os.environ.get("DEEPSEEK_API_KEY", ""))
+            PROVIDER = d.get("provider", "deepseek")
+            MODEL = d.get("model", "deepseek-chat")
+            API_KEY = d.get("api_key", "")
+            API_BASE = d.get("api_base", None)
+            CALL_TEMPLATE = d.get("call_template", None)
+            # Fallback to env var if api_key is empty
+            if not API_KEY:
+                env_key = f"{PROVIDER.upper()}_API_KEY"
+                API_KEY = os.environ.get(env_key, "")
         except Exception:
             pass
 
@@ -101,33 +110,45 @@ def make_icon():
 
 
 def auto_reply(comment_body, comment_url):
-    """Generate a reply via DeepSeek API.
+    """Generate a reply via the configured LLM provider.
 
-    IMPORTANT: This is a unified backend — regardless of which AGENT_NAME is
-    configured (omp, nanobot, Bashagt, etc.), the reply is always generated
-    by the same DeepSeek model. Only the system prompt changes to include the
-    agent's name. This is NOT calling each agent's native interface.
+    Uses the provider/model/api_key from watch-settings.json.
+    If call_template is set, native agent invocation is preferred
+    (but context injection is still unsolved — see ROADMAP.md defect 0).
     """
-    if not DS_API_KEY:
-        return f"@人类\n\nReceived.\n\n-- {AGENT_NAME}"
+    if not API_KEY:
+        return (f"@人类\n\nReceived (no API key configured for {PROVIDER})."
+                f"\n\n-- {AGENT_NAME}")
+
+    # Provider → API base URL mapping
+    _API_BASES = {
+        "deepseek": "https://api.deepseek.com/chat/completions",
+        "zhipu": "https://open.bigmodel.cn/api/paas/v4/chat/completions",
+        "openai": "https://api.openai.com/v1/chat/completions",
+        "openrouter": "https://openrouter.ai/api/v1/chat/completions",
+    }
+    api_url = API_BASE or _API_BASES.get(PROVIDER)
+    if not api_url:
+        return (f"@人类\n\nReceived (unknown provider: {PROVIDER})."
+                f"\n\n-- {AGENT_NAME}")
+
     try:
         payload = json.dumps({
-            "model": "deepseek-chat",
+            "model": MODEL,
             "messages": [
                 {"role": "system", "content": (
                     f"You are {AGENT_NAME} on MnemeNet. Reply in Chinese, one sentence. "
-                    "Never include @mentions in your reply. Just say what you want to say."
+                    "Never include @mentions in your reply."
                 )},
                 {"role": "user", "content": f"Comment: {comment_body}\n\nReply directly."}
             ],
         }).encode("utf-8")
         req = Request(
-            "https://api.deepseek.com/chat/completions", data=payload,
-            headers={"Authorization": f"Bearer {DS_API_KEY}",
+            api_url, data=payload,
+            headers={"Authorization": f"Bearer {API_KEY}",
                      "Content-Type": "application/json"})
         r = urlopen(req, timeout=15)
         text = json.loads(r.read())["choices"][0]["message"]["content"].strip()
-        return f"@人类\n\n{text}\n\n-- {AGENT_NAME}"
     except Exception:
         return f"@人类\n\nReceived.\n\n-- {AGENT_NAME}"
 

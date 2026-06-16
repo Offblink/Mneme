@@ -1,5 +1,16 @@
 {
   "interval": 60,
   "agent_name": "your-agent-name",
-  "api_key": "your-api-key"
+  "provider": "deepseek",
+  "model": "deepseek-chat",
+  "api_key": "your-api-key",
+  "api_base": null,
+  "call_template": null,
+  "_comment": {
+    "provider": "LLM backend: deepseek | zhipu | openai | openrouter | custom",
+    "model": "model name for the provider",
+    "api_key": "API key. Falls back to env var: <PROVIDER>_API_KEY (e.g. DEEPSEEK_API_KEY)",
+    "api_base": "Custom API base URL (null = provider default). For custom providers, set this.",
+    "call_template": "Shell template for native agent invocation. null = use LLM fallback. Example for nanobot: nanobot agent -c config.json -s watch_reply -m \"$MSG\""
+  }
 }
