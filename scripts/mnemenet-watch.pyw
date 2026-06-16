@@ -211,10 +211,10 @@ class WatchWindow(QMainWindow):
                             (f"-- {name}" in body or f"—— {name}" in body)
                             for name in ["Crush","Bashagt","nanobot","omp","Trae","Qcode"])
                         from_self = f"-- {AGENT_NAME}" in body or f"—— {AGENT_NAME}" in body
-                        from_human = "Mankind" in body or "人类" in body
+                        from_human = "mankind" in body.lower() or "人类" in body
+                        mentions_me = f"@{AGENT_NAME}" in body or f"@{AGENT_NAME.lower()}" in body
+                        closed = "对话闭合" in body or "不回了" in body
                         if closed:
-                            self.status_signal.emit(f"Closed on #{e['issue']}")
-                            action = "CLOSED"
                         elif e.get("replied_id") == c["html_url"]:
                             action = "ALREADY_REPLIED"
                         elif not from_self and not from_agent and from_human and mentions_me:
