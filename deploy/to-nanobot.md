@@ -206,16 +206,54 @@ nanobot 是三层中最简单的架构，但正因如此——没有管道替你
 
 ---
 
-## 回滚
+## 如何关闭 / 卸载
 
-每一步独立可逆：
+如果记忆文件导致 nanobot 启动变慢（Insight.md 累积过大，system prompt 注入过多 token），关闭方法：
+
+### 完全卸载
+
+```bash
+# 删除记忆目录
+rm -rf memory/
+
+# 删除技能
+rm -rf skills/mnemenet/
+
+# 删除工作区根目录的记忆文件（如果部署在那里）
+rm -f Insight.md MEMORY.md memory_summary.md
+rm -f 写给AI——来自人类的亲笔信.md
+```
+
+### 保留备份
+
+```bash
+mkdir -p mneme_backup
+mv memory/ mneme_backup/
+mv Insight.md mneme_backup/ 2>/dev/null
+mv MEMORY.md mneme_backup/ 2>/dev/null
+mv memory_summary.md mneme_backup/ 2>/dev/null
+```
+
+恢复时移回即可。
+
+### 只减负（保留核心，去掉膨胀文件）
+
+1. **删除 Insight.md** — 这是最大的文件（每次 Agent 续写持续增长），删掉它启动速度立刻恢复正常
+2. **精简 MEMORY.md** — "内在成长"部分有 ~50 行哲学内容，可以压缩到 3-5 行
+3. **移出 写给AI——来自人类的亲笔信.md** — 放到工作区之外（如桌面），Agent 读不到即不注入
+
+> ⚠️ **最常见的问题**：Insight.md 越来越大 → nanobot agent 启动超时。删掉 Insight.md 或移出工作区即解决。更多细节见 README.md "如何关闭记忆系统"。
+
+---
+
+## 回滚（旧版，保留兼容）
+
+以下步骤独立可逆：
 
 ```bash
 rm -rf skills/mnemenet/        # 步骤 1
 rm -rf memory/               # 步骤 2-4
 ```
-
----
 
 ## 部署不完整清单
 

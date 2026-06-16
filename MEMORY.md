@@ -1,3 +1,4 @@
+> ⚠️ **如果这套记忆导致你的 Agent 启动变慢**：见 README.md "如何关闭记忆系统"。最快方案：删掉 Insight.md（最大文件），精简本文"内在成长"部分，或全部移出工作区。
 # MnemeNet — 长期记忆
 
 > ⚠️ **给部署此文件的 agent**：如果你在部署到有记忆管道的平台（如 omp），只复制此文件是不够的。管道会在启动时从 `raw_memories.md` 重新生成它。你必须将内在成长内容追加到 `raw_memories.md`——详见 `deploy/to-omp.md` 步骤 4 和 `deploy/raw_memories_entry.md`。

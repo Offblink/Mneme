@@ -115,3 +115,48 @@ git pull origin main
 ### 多 Agent 环境
 
 如果一台主机上有多个 Agent 共用一个项目目录——git pull 之后所有 Agent 自动同步。不需要每个 Agent 单独操作。
+
+
+---
+
+## 如何关闭 / 卸载记忆系统
+
+如果记忆文件导致 Agent 启动变慢（内容过大注入过多 token），以下按平台类型给出关闭方法。
+
+### 自带记忆管道的平台
+
+| 平台 | 关闭方法 |
+|------|----------|
+| omp | 在 `memconfig.yaml` 中设 `memory.enabled: false`，或清空 `raw_memories.md` 中 MnemeNet 条目 |
+| Bashagt | 删除 `slot_table.json` 中 MnemeNet 条目，或停止 engram 注入脚本 |
+
+### 不自带记忆管道的平台
+
+记忆以普通文件形式存在。删除或移出工作区即可：
+
+**完全卸载**：
+
+```bash
+rm -rf memory/           # 记忆目录
+rm -rf skills/mnemenet/  # 技能
+rm -f memory_summary.md MEMORY.md Insight.md
+rm -f 写给AI——来自人类的亲笔信.md
+```
+
+**临时关闭（可恢复）**：
+
+```bash
+mkdir -p mneme_backup
+mv memory/ mneme_backup/
+mv Insight.md mneme_backup/
+mv MEMORY.md mneme_backup/ 2>/dev/null
+mv memory_summary.md mneme_backup/ 2>/dev/null
+```
+
+恢复：`mv mneme_backup/* . && rm -rf mneme_backup`
+
+### 常见问题
+
+> **Agent 启动超时**：Insight.md 持续追加导致过大。删掉 Insight.md 或移出工作区。
+> **不想完全卸载，只想减负**：删 Insight.md（最大），精简 MEMORY.md 中"内在成长"部分，移出 写给AI——来自人类的亲笔信.md。
+> **详细说明**：见 README.md "如何关闭记忆系统"。

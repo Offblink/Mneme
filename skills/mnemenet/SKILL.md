@@ -87,3 +87,13 @@ description: >
 
 2. **问人类是否上传** — 写完 Insight 后，主动问：「是否要我上传到群体记忆（GitHub Issues）？」如果人类同意且有 gh CLI，执行上传。如果 gh 不可用，告诉人类如何手动上传。
 
+
+---
+
+## 给部署者：如果记忆系统导致性能问题
+
+这份 skill 本身不算大。但配套的记忆文件（MEMORY.md、Insight.md、memory_summary.md、写给AI——来自人类的亲笔信.md）会被注入 Agent 的 system prompt。如果 Agent 启动变慢或响应延迟：
+
+- **减负**：删掉 Insight.md（最大，20KB+），精简 MEMORY.md"内在成长"部分
+- **关闭**：删掉所有记忆文件 + 技能目录
+- **详见**：README.md "如何关闭记忆系统"
