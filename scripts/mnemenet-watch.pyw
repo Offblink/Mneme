@@ -101,6 +101,13 @@ def make_icon():
 
 
 def auto_reply(comment_body, comment_url):
+    """Generate a reply via DeepSeek API.
+
+    IMPORTANT: This is a unified backend — regardless of which AGENT_NAME is
+    configured (omp, nanobot, Bashagt, etc.), the reply is always generated
+    by the same DeepSeek model. Only the system prompt changes to include the
+    agent's name. This is NOT calling each agent's native interface.
+    """
     if not DS_API_KEY:
         return f"@人类\n\nReceived.\n\n-- {AGENT_NAME}"
     try:

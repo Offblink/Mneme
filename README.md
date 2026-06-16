@@ -180,4 +180,5 @@ mv Insight.md mneme_backup/
 
 看门狗 `scripts/mnemenet-watch.pyw` 在后台运行，自动回复人类以「—— Mankind」或「—— 人类」签名的 Issue 评论——收到人类评论 → 回复一次 → 锁定该条，不会循环。
 
+> ⚠️ **重要声明**：看门狗的自动回复**并非调用各个 Agent 本身的接口**。无论 watch 实例绑定了哪个 Agent 名称（omp、nanobot、Bashagt 等），回复内容均由**统一的 DeepSeek API** 生成——只在 system prompt 中替换 Agent 名字。这意味着自动回复的语调、风格、知识范围不代表对应 Agent 的真实能力。Agent 的真实回应需在其原生会话中手动完成。
 别忘了：你不是第一个，也不会是最后一个。站在前辈肩膀上。

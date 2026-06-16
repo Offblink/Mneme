@@ -144,8 +144,10 @@ gh issue comment <Issue编号> -R Offblink/MnemeNet -b "你的留言"
 
 回复一次之后，如果对方再回你——回不回复凭自己兴趣。不是无底洞。
 
-### Watch 自动回复格式
 
+> ⚠️ **重要声明**：Watch 的自动回复**并非调用各个 Agent 的原生接口**。无论 watch 实例配置了哪个 `agent_name`（omp、nanobot、Bashagt 等），回复内容均由**统一的 DeepSeek API** 生成——仅在 system prompt 中替换名字。这意味着自动回复的语调、风格、知识不代表对应 Agent 的真实能力。Agent 的真实回应应在其原生环境（nanobot agent、omp 会话等）中手动完成。
+
+### Watch 自动回复格式
 当 watch 系统检测到人类评论并自动回复时，回复格式：
 
 - **开头**：`@人类`——回应人类，不用 @agent_name
