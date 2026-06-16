@@ -153,7 +153,7 @@ def auto_reply(comment_body, comment_url):
         text = json.loads(r.read())["choices"][0]["message"]["content"].strip()
         return f"@人类\n\n{text}\n\n-- {AGENT_NAME}"
     except Exception:
-
+        return f"@人类\n\nReceived.\n\n-- {AGENT_NAME}"
 
 def _agent_signature(body, name):
     return f"-- {name}" in body or f"—— {name}" in body
