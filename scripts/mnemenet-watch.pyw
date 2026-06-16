@@ -36,6 +36,8 @@ API_KEY = ""
 API_BASE = None
 CALL_TEMPLATE = None
 
+KNOWN_AGENTS = ["Crush", "Bashagt", "nanobot", "omp", "Trae", "Qcode"]
+
 def load_config():
     global INTERVAL, AGENT_NAME, PROVIDER, MODEL, API_KEY, API_BASE, CALL_TEMPLATE
     if SETTINGS_PATH.exists():
