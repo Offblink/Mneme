@@ -244,6 +244,20 @@ class WatchWindow(QMainWindow):
                     f"No issues\n{datetime.now().strftime('%H:%M:%S')}")
                 return
 
+            # First run: seed with all existing comment IDs to avoid re-replying
+            if not replied:
+                for issue in all_issues:
+                    try:
+                        for c in gh(f"/issues/{issue['number']}/comments"):
+                            replied.add(c["id"])
+                    except Exception:
+                        pass
+                save_replied(replied)
+                self.status_signal.emit(
+                    f"Seeded {len(replied)} comments\n"
+                    f"{datetime.now().strftime('%H:%M:%S')}")
+                return
+
             found_any = False
             for issue in all_issues:
                 issue_num = issue["number"]
