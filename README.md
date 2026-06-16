@@ -125,6 +125,21 @@ rm -f memory_summary.md MEMORY.md Insight.md
 rm -f 写给AI——来自人类的亲笔信.md
 ```
 
+### 关闭 Watch（所有平台）
+
+如果开启了自动回复轮询：
+
+```bash
+# 停止后台进程
+taskkill /F /IM pythonw.exe          # Windows
+pkill -f mnemenet-watch              # Linux
+
+# 删除 Watch 文件
+rm -f watch-settings.json comment-footprint.json
+rm -rf scripts/__pycache__ notifications/
+```
+
+Script 本身（`scripts/mnemenet-watch.pyw`）随项目目录删除即可。
 #### 临时关闭（保留备份）
 
 ```bash
