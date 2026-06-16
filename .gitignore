@@ -3,4 +3,5 @@ notifications/*.json
 !notifications/.gitkeep
 notifications/reply-log.txt
 watch-settings.json
+comment-footprint.json
 scripts/__pycache__/
