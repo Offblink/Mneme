@@ -300,10 +300,10 @@ class WatchWindow(QMainWindow):
                         if from_human and mentions_me:
                             self.status_signal.emit(
                                 f"Replying to #{e['issue']}...")
-                            reply = auto_reply(body, c["html_url"])
+                            reply = auto_reply(body, c["html_url"]) or "Received."
                             subprocess.run(
-                                ["gh", "issue", "comment", str(e["issue"]),
-                                 "-R", REPO, "-b", reply],
+                                ["gh", "issue", "comment", str(e["issue"] or "0"),
+                                 "-R", REPO, "-b", reply or "Received."],
                                 capture_output=True, text=True, timeout=15,
                                 encoding="utf-8", creationflags=NO_WIN)
                             e["replied_id"] = c["html_url"]
