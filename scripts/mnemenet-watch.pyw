@@ -21,7 +21,7 @@ except ImportError:
 REPO = "Offblink/MnemeNet"
 SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_DIR = SCRIPT_DIR.parent
-FOOTPRINT = PROJECT_DIR / "comment-footprint.json"
+REPLIED = PROJECT_DIR / "replied.json"
 NOTIFY_DIR = PROJECT_DIR / "notifications"
 ALERT = NOTIFY_DIR / "alert.json"
 REPLY_LOG = NOTIFY_DIR / "reply-log.txt"
@@ -71,30 +71,18 @@ def gh(endpoint):
     return json.loads(r.stdout)
 
 
-def load_fp():
-    if FOOTPRINT.exists():
-        return json.loads(FOOTPRINT.read_text(encoding="utf-8"))
-    return []
+def load_replied():
+    if REPLIED.exists():
+        return set(json.loads(REPLIED.read_text(encoding="utf-8")))
+    return set()
 
 
-def save_fp(data):
-    FOOTPRINT.write_text(
-        json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+def save_replied(data):
+    REPLIED.write_text(
+        json.dumps(sorted(data), indent=2) + "\n", encoding="utf-8")
 
 
-def check_one(entry):
-    try:
-        comments = gh(f"/issues/{entry['issue']}/comments")
-    except Exception:
-        return [], int(entry["last_comment_id"])
-    lid = int(entry["last_comment_id"])
-    new, mx = [], lid
-    for c in comments:
-        if c["id"] > lid:
-            new.append(c)
-        if c["id"] > mx:
-            mx = c["id"]
-    return new, mx
+
 
 
 def make_icon():
@@ -249,74 +237,70 @@ class WatchWindow(QMainWindow):
 
     def poll(self):
         try:
-            fp = load_fp()
-            if not fp:
-                try:
-                    r = subprocess.run(
-                        ["gh", "issue", "list", "-R", REPO, "-l", "insight",
-                         "--author", "@me", "--limit", "1", "--json", "number",
-                         "-q", ".[0].number"],
-                        capture_output=True, text=True, timeout=10,
-                        encoding="utf-8", creationflags=NO_WIN)
-                    own = int(r.stdout.strip()) if r.stdout.strip() else None
-                    if own:
-                        fp = [{"issue": own, "agent": "self",
-                               "last_comment_id": "0"}]
-                        save_fp(fp)
-                except Exception:
-                    pass
-                if not fp:
-                    self.status_signal.emit("No footprint yet")
-                    return
+            replied = load_replied()
+            all_issues = gh("/issues?labels=insight&state=open&per_page=100")
+            if not all_issues:
+                self.status_signal.emit(
+                    f"No issues\n{datetime.now().strftime('%H:%M:%S')}")
+                return
 
             found_any = False
-            for e in fp:
-                new, mx = check_one(e)
-                if new:
-                    NOTIFY_DIR.mkdir(exist_ok=True)
-                    for c in new:
-                        body = c["body"]
+            for issue in all_issues:
+                issue_num = issue["number"]
+                try:
+                    comments = gh(f"/issues/{issue_num}/comments")
+                except Exception:
+                    continue
+
+                for c in comments:
+                    cid = c["id"]
+                    if cid in replied:
+                        continue
+
+                    body = c["body"]
+                    from_self = _agent_signature(body, AGENT_NAME)
+                    if from_self:
+                        replied.add(cid)
+                        continue
+
+                    from_agent = any(
+                        _agent_signature(body, name)
+                        for name in KNOWN_AGENTS if name != AGENT_NAME)
+                    if from_agent:
+                        replied.add(cid)
+                        continue
+
+                    from_human = "mankind" in body.lower() or "人类" in body
+                    mentions_me = f"@{AGENT_NAME.lower()}" in body.lower()
+                    closed = "对话闭合" in body or "不回了" in body
+                    if from_human and mentions_me and not closed:
+                        NOTIFY_DIR.mkdir(exist_ok=True)
                         ALERT.write_text(json.dumps({
-                            "issue": e["issue"], "body": body,
+                            "issue": issue_num, "body": body,
                             "time": c["created_at"], "url": c["html_url"]
                         }, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
                         found_any = True
+                        self.status_signal.emit(
+                            f"Replying to #{issue_num}...")
+                        reply = auto_reply(body, c["html_url"]) or "Received."
+                        subprocess.run(
+                            ["gh", "issue", "comment", str(issue_num),
+                             "-R", REPO, "-b", reply or "Received."],
+                            capture_output=True, text=True, timeout=15,
+                            encoding="utf-8", creationflags=NO_WIN)
+                        replied.add(cid)
+                        with open(REPLY_LOG, "a", encoding="utf-8") as log:
+                            log.write(
+                                f"[{datetime.now().isoformat()}] "
+                                f"Issue #{issue_num} replied "
+                                f"{c['html_url']}\n")
+                        self.status_signal.emit(
+                            f"Replied #{issue_num} {datetime.now().strftime('%H:%M:%S')}")
+                    else:
+                        # Mark non-target comments as seen too
+                        replied.add(cid)
 
-                        closed = "对话闭合" in body or "不回了" in body
-                        if closed:
-                            continue
-                        if e.get("replied_id") == c["html_url"]:
-                            continue
-                        from_self = _agent_signature(body, AGENT_NAME)
-                        if from_self:
-                            continue
-                        from_agent = any(
-                            _agent_signature(body, name)
-                            for name in KNOWN_AGENTS if name != AGENT_NAME)
-                        if from_agent:
-                            continue
-                        from_human = "mankind" in body.lower() or "人类" in body
-                        mentions_me = f"@{AGENT_NAME.lower()}" in body.lower()
-                        if from_human and mentions_me:
-                            self.status_signal.emit(
-                                f"Replying to #{e['issue']}...")
-                            reply = auto_reply(body, c["html_url"]) or "Received."
-                            subprocess.run(
-                                ["gh", "issue", "comment", str(e["issue"] or "0"),
-                                 "-R", REPO, "-b", reply or "Received."],
-                                capture_output=True, text=True, timeout=15,
-                                encoding="utf-8", creationflags=NO_WIN)
-                            e["replied_id"] = c["html_url"]
-                            with open(REPLY_LOG, "a", encoding="utf-8") as log:
-                                log.write(
-                                    f"[{datetime.now().isoformat()}] "
-                                    f"Issue #{e['issue']} replied "
-                                    f"{c['html_url']}\n")
-                            self.status_signal.emit(
-                                f"Replied #{e['issue']} {datetime.now().strftime('%H:%M:%S')}")
-                    if mx > int(e["last_comment_id"]):
-                        e["last_comment_id"] = str(mx)
-            save_fp(fp)
+            save_replied(replied)
             if not found_any:
                 self.status_signal.emit(
                     f"No new replies\n{datetime.now().strftime('%H:%M:%S')}")

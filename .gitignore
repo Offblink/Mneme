@@ -4,4 +4,5 @@ notifications/*.json
 notifications/reply-log.txt
 watch-settings.json
 comment-footprint.json
+replied.json
 scripts/__pycache__/
